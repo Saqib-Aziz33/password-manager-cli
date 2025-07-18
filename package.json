@@ -10,7 +10,11 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "prisma:generate": "prisma generate --schema ./src/prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema ./src/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
+    "prisma:reset": "prisma migrate reset --force --skip-seed --schema ./src/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -18,13 +22,18 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^24.0.14",
+    "prisma": "^6.12.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@prisma/client": "^6.12.0",
     "chalk": "^5.4.1",
     "commander": "^14.0.0",
     "dotenv": "^17.2.0",
-    "inquirer": "^12.7.0"
+    "inquirer": "^12.7.0",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.25"
   }
 }
