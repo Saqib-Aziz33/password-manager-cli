@@ -2,7 +2,6 @@
   "name": "password-manager-cli",
   "version": "0.0.1",
   "main": "dist/main.js",
-  "type": "module",
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.0.0"
@@ -32,6 +31,7 @@
     "commander": "^14.0.0",
     "dotenv": "^17.2.0",
     "inquirer": "^12.7.0",
+    "ora": "^8.2.0",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.25"
   }

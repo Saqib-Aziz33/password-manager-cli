@@ -51,4 +51,4 @@ class Aes256Cbc extends BaseEncryption {
   }
 }
 
-export { Aes256Cbc };
+export { Aes256Cbc, BaseEncryption };
