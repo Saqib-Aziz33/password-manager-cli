@@ -1,5 +1,6 @@
 src/generated/prisma/
 sqlite.db
+*.db
 
 # Node modules
 node_modules/
