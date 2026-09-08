@@ -4,7 +4,6 @@ import ora from "ora";
 import Commands from "./services/commands.service";
 import { Command } from "commander";
 import { config } from "@/config";
-import { Aes256Cbc } from "./services/encrypt.service";
 import Actions from "./services/actions.service";
 
 async function main() {
@@ -16,4 +15,18 @@ async function main() {
   commands.init();
 }
 
-main();
+main().catch(async (err) => {
+  console.error(err);
+  await prisma.$disconnect();
+  process.exit(1);
+});
+
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
