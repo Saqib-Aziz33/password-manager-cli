@@ -28,7 +28,6 @@
   "dependencies": {
     "@prisma/client": "^6.12.0",
     "chalk": "^5.4.1",
-    "commander": "^14.0.0",
     "dotenv": "^17.2.0",
     "inquirer": "^12.7.0",
     "ora": "^8.2.0",

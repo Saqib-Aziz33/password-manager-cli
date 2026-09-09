@@ -21,84 +21,86 @@ npm run prisma:generate
 
 ## Usage
 
-### First-time Setup
+Start the interactive session:
 
 ```bash
-# Initialize the master encryption key
-npx tsx src/main.ts setup
+npx tsx src/main.ts
+```
+
+You'll see a `password-manager>` prompt. Type commands here.
+
+### First-time Setup
+
+```
+password-manager> setup
 ```
 
 You'll be prompted to create a master password. This password encrypts the AES key used for all stored passwords. **Remember this password** — there is no recovery.
 
 ### Login
 
-```bash
-# Authenticate with your master password
-npx tsx src/main.ts login
+```
+password-manager> login
 ```
 
-All commands after login use the decrypted key for the current session.
+Enter your master password to decrypt the AES key. All subsequent commands use this key for the session.
 
 ### Add a Password
 
-```bash
-npx tsx src/main.ts add
+```
+password-manager> add
 ```
 
 You'll be prompted for: service name, username, email, password, and description. All fields except service name and password are optional.
 
 ### List All Passwords
 
-```bash
-npx tsx src/main.ts list
+```
+password-manager> list
 ```
 
-Displays all stored entries in a table (passwords are hidden).
+Displays all stored entries in a table (passwords hidden).
 
 ### Get a Password
 
-```bash
-# Show password entry (password masked)
-npx tsx src/main.ts get github
-
-# Show password in plain text
-npx tsx src/main.ts get github --show
+```
+password-manager> get github          # password masked
+password-manager> get github -s       # show password in plain text
 ```
 
 ### Search
 
-```bash
-npx tsx src/main.ts search github
+```
+password-manager> search github
 ```
 
 Searches across service name, username, email, and description.
 
 ### Edit a Password
 
-```bash
-npx tsx src/main.ts edit github
+```
+password-manager> edit github
 ```
 
 Select which fields to update interactively.
 
 ### Delete a Password
 
-```bash
-npx tsx src/main.ts delete github
+```
+password-manager> delete github
 ```
 
-### Logout
+### Logout / Exit
 
-```bash
-npx tsx src/main.ts logout
+```
+password-manager> logout    # clear session key
+password-manager> exit      # exit the application
 ```
 
-Clears the session key from memory.
+### Help
 
-### Version
-
-```bash
-npx tsx src/main.ts --version
+```
+password-manager> help
 ```
 
 ## Building for Production
@@ -112,7 +114,7 @@ npm start
 
 ```
 src/
-  main.ts                 # Entry point
+  main.ts                 # Entry point and REPL loop
   config/
     index.ts              # App configuration
     db.ts                 # Prisma client setup
@@ -121,7 +123,6 @@ src/
     migrations/           # Migration history
   services/
     actions.service.ts    # Core business logic (auth, CRUD, encryption)
-    commands.service.ts   # CLI command definitions (Commander.js)
     encrypt.service.ts    # AES-256-CBC encryption/decryption
 ```
 
@@ -162,7 +163,6 @@ DATABASE_URL=file:./dev.db
 
 - **Runtime**: Node.js 22+
 - **Language**: TypeScript
-- **CLI Framework**: Commander.js
 - **Database**: SQLite via Prisma ORM
 - **Encryption**: AES-256-CBC (Node.js crypto)
 - **Key Derivation**: PBKDF2 (SHA-512, 100K iterations)
