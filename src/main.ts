@@ -29,6 +29,8 @@ async function main() {
     prompt: "password-manager> ",
   });
 
+  actions.attachReadline(rl);
+
   const prompt = () => rl.prompt();
 
   const dispatch = async (input: string): Promise<boolean> => {

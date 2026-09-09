@@ -4,11 +4,25 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import ora from "ora";
 import { Aes256Cbc } from "./encrypt.service";
+import * as readline from "readline";
 
 class Actions {
   private sessionKey: Buffer | null = null;
+  private rl: readline.Interface | null = null;
 
   constructor(private readonly prisma: PrismaClient) {}
+
+  attachReadline(rl: readline.Interface) {
+    this.rl = rl;
+  }
+
+  private pauseRl() {
+    this.rl?.pause();
+  }
+
+  private resumeRl() {
+    this.rl?.resume();
+  }
 
   private requireAuth(): Buffer {
     if (!this.sessionKey) {
@@ -64,6 +78,7 @@ class Actions {
   async setup() {
     const existingKey = await this.prisma.key.findFirst();
     if (existingKey) {
+      this.pauseRl();
       const { overwrite } = await inquirer.prompt([
         {
           type: "confirm",
@@ -72,12 +87,14 @@ class Actions {
           default: false,
         },
       ]);
+      this.resumeRl();
       if (!overwrite) {
         console.log(chalk.yellow("Setup cancelled."));
         return;
       }
     }
 
+    this.pauseRl();
     const { masterPassword } = await inquirer.prompt([
       {
         type: "password",
@@ -88,7 +105,9 @@ class Actions {
           input.length >= 4 ? true : "Password must be at least 4 characters",
       },
     ]);
+    this.resumeRl();
 
+    this.pauseRl();
     const { confirm } = await inquirer.prompt([
       {
         type: "password",
@@ -97,6 +116,7 @@ class Actions {
         mask: "*",
       },
     ]);
+    this.resumeRl();
 
     if (masterPassword !== confirm) {
       console.log(chalk.red("Passwords do not match. Setup cancelled."));
@@ -141,6 +161,7 @@ class Actions {
       return;
     }
 
+    this.pauseRl();
     const { masterPassword } = await inquirer.prompt([
       {
         type: "password",
@@ -149,6 +170,7 @@ class Actions {
         mask: "*",
       },
     ]);
+    this.resumeRl();
 
     const spinner = ora("Authenticating...").start();
 
@@ -176,6 +198,7 @@ class Actions {
   async addEntry() {
     this.requireAuth();
 
+    this.pauseRl();
     const answers = await inquirer.prompt([
       { type: "input", name: "service", message: "Service name:", validate: (v: string) => v.trim() !== "" || "Service name is required" },
       { type: "input", name: "username", message: "Username (optional):" },
@@ -183,6 +206,7 @@ class Actions {
       { type: "password", name: "password", message: "Password:", mask: "*", validate: (v: string) => v.trim() !== "" || "Password is required" },
       { type: "input", name: "description", message: "Description (optional):" },
     ]);
+    this.resumeRl();
 
     const spinner = ora("Encrypting and saving...").start();
 
@@ -280,6 +304,7 @@ class Actions {
       return;
     }
 
+    this.pauseRl();
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
@@ -288,6 +313,7 @@ class Actions {
         default: false,
       },
     ]);
+    this.resumeRl();
 
     if (!confirm) {
       console.log(chalk.yellow("Deletion cancelled."));
@@ -312,6 +338,7 @@ class Actions {
 
     console.log(chalk.dim(`Editing entry for '${entry.service}' (leave blank to keep current value):\n`));
 
+    this.pauseRl();
     const { fields } = await inquirer.prompt([
       {
         type: "checkbox",
@@ -320,6 +347,7 @@ class Actions {
         choices: ["username", "email", "password", "description"],
       },
     ]);
+    this.resumeRl();
 
     if (fields.length === 0) {
       console.log(chalk.yellow("No fields selected. Nothing updated."));
@@ -329,10 +357,12 @@ class Actions {
     const updates: Record<string, any> = {};
 
     for (const field of fields) {
+      this.pauseRl();
       if (field === "password") {
         const { value } = await inquirer.prompt([
           { type: "password", name: "value", message: "New password:", mask: "*" },
         ]);
+        this.resumeRl();
         const iv = Aes256Cbc.generateIv();
         const cipher = new Aes256Cbc(this.sessionKey!, iv);
         const { iv: ivHex, string: encrypted } = cipher.encrypt(value);
@@ -348,6 +378,7 @@ class Actions {
             default: String(current),
           },
         ]);
+        this.resumeRl();
         updates[field] = value.trim() || null;
       }
     }
